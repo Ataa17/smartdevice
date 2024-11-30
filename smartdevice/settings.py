@@ -37,8 +37,17 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'smartcar',
+    'channels',
 ]
-
+CHANNEL_LAYERS = {
+ "default": {
+ "BACKEND": "channels_redis.core.RedisChannelLayer",
+ "CONFIG": {
+ "hosts": [("127.0.0.1", 6379)],
+ },
+ },
+ }
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -68,7 +77,7 @@ TEMPLATES = [
 ]
 
 WSGI_APPLICATION = 'smartdevice.wsgi.application'
-
+ASGI_APPLICATION = 'smartdevice.asgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/5.1/ref/settings/#databases

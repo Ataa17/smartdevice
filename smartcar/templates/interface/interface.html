@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sensor Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        // Establish WebSocket connection
+        const socket = new WebSocket('ws://localhost:8000/ws/sensor/');
+
+        socket.onmessage = function(event) {
+            const data = JSON.parse(event.data);
+
+            // Update temperature
+            document.getElementById('temperature-value').innerText = `${data.temperature}°C`;
+
+            // Update RGB lights based on booleans (True/False)
+            let rgbColor = "rgb(0, 0, 0)";  // Default to black (off)
+
+            if (data.red && data.green && data.blue) {
+                rgbColor = "rgb(255, 255, 255)";  // White if all are True
+            } else {
+                if (data.red) rgbColor = "rgb(255, 0, 0)";  // Red
+                if (data.green) rgbColor = "rgb(0, 255, 0)";  // Green
+                if (data.blue) rgbColor = "rgb(0, 0, 255)";  // Blue
+            }
+            document.getElementById('rgb-light').style.backgroundColor = rgbColor;
+            document.getElementById('rgb-values').innerText = `R: ${data.red ? 1 : 0} G: ${data.green ? 1 : 0} B: ${data.blue ? 1 : 0}`;
+
+            // Update distance
+            document.getElementById('distance-value').innerText = `${data.distance} cm`;
+        };
+
+        socket.onerror = function(error) {
+            console.error("WebSocket Error: ", error);
+        };
+    </script>
+</head>
+<body class="bg-gray-100 font-sans">
+    <div class="container mx-auto p-4">
+        <header class="text-center py-4">
+            <h1 class="text-3xl font-bold text-gray-800">Sensor Dashboard</h1>
+            <p class="text-gray-600">Monitor real-time data</p>
+        </header>
+
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-6">
+            <!-- Temperature -->
+            <div class="bg-white shadow-md rounded-lg p-4">
+                <h2 class="text-xl font-semibold text-gray-700">Temperature</h2>
+                <p id="temperature-value" class="text-4xl font-bold text-blue-500">--°C</p>
+            </div>
+
+            <!-- RGB Lights -->
+            <div class="bg-white shadow-md rounded-lg p-4">
+                <h2 class="text-xl font-semibold text-gray-700">RGB Lights</h2>
+                <div class="flex items-center space-x-4">
+                    <div id="rgb-light" class="h-10 w-10 rounded-full" style="background-color: rgb(0, 0, 0);"></div>
+                    <p id="rgb-values" class="text-lg text-gray-800">R: 0 G: 0 B: 0</p>
+                </div>
+            </div>
+
+            <!-- Distance -->
+            <div class="bg-white shadow-md rounded-lg p-4">
+                <h2 class="text-xl font-semibold text-gray-700">Distance</h2>
+                <p id="distance-value" class="text-4xl font-bold text-green-500">-- cm</p>
+            </div>
+        </div>
+    </div>
+    <div class='bg-blue-900'>
+        <p class='text-white text-center'>Made with love by Ataa, Islem, Fatma and Helmi</p>
+    </div>
+</body>
+</html>
